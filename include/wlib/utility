@@ -1,0 +1,6 @@
+#ifndef __WLIB_TMP_UTILITY__
+#define __WLIB_TMP_UTILITY__
+
+#include <wlib/tmp/Utility.h>
+
+#endif

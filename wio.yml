@@ -1,0 +1,24 @@
+pkg:
+  name: wlib-tmp
+  description: "Template helpers for WLib"
+  repository: "https://github.com/waterloop/wlib-tmp"
+  version: 1.0.0
+  author: "Jeff Niu <jeffniu22@gmail.com> (https://github.com/mogball)"
+  contributors: []
+  organization: "Waterloop"
+  keywords:
+  - wio
+  - c++
+  - wlib
+  - template
+  license: "MIT"
+  header_only: true
+  platform: ALL
+  framework:
+  - ALL
+  board:
+  - ALL
+  compile_flags: []
+  ide: none
+
+dependencies: {}

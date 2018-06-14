@@ -1,0 +1,6 @@
+#ifndef __WLIB_TMP_TYPETRAITS__
+#define __WLIB_TMP_TYPETRAITS__
+
+#include <wlib/tmp/TypeTraits.h>
+
+#endif
