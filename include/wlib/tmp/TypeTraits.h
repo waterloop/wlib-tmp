@@ -19,7 +19,7 @@ namespace wlp {
         template<typename>  struct is_void_helper       : public false_type {};
         template<>          struct is_void_helper<void> : public true_type {};
     }
-    template<typename T> struct is_void : 
+    template<typename T> struct is_void :
         public det::is_void_helper<typename remove_const<T>::type>::type {};
 
     // is_reference
@@ -32,11 +32,11 @@ namespace wlp {
         public or_<is_lvalue_reference<T>, is_rvalue_reference<T>>::type {};
 
     // remove_pointer
-    namespace det {  
+    namespace det {
         template<typename T, typename>      struct remove_pointer_helper            { typedef T type; };
         template<typename T, typename U>    struct remove_pointer_helper<T, U *>    { typedef U type; };
     }
-    template<typename T> struct remove_pointer : 
+    template<typename T> struct remove_pointer :
         public det::remove_pointer_helper<T, typename remove_cv<T>::type> {};
 
     // remove_reference
@@ -62,15 +62,61 @@ namespace wlp {
 
     // get_array_size
     template<typename> struct get_array_size {};
-    template<typename T, size_t sz> struct get_array_size<T[sz]> : 
+    template<typename T, size_t sz> struct get_array_size<T[sz]> :
         public integral_constant<size_t, sz>::type {};
 
+    // is_function
+    template<typename>                     struct is_function                       : public false_type {};
+    template<typename R, typename... Args> struct is_function<R(Args...)>           : public true_type {};
+    template<typename R, typename... Args> struct is_function<R(Args...) &>         : public true_type {};
+    template<typename R, typename... Args> struct is_function<R(Args...) &&>        : public true_type {};
+    template<typename R, typename... Args> struct is_function<R(Args...) const>     : public true_type {};
+    template<typename R, typename... Args> struct is_function<R(Args...) const &>   : public true_type {};
+    template<typename R, typename... Args> struct is_function<R(Args...) const &&>  : public true_type {};
+
     // is_object
+    template<typename T> struct is_object :
+        public not_<or_<is_function<T>, is_reference<T>, is_void<T>>>::type {};
 
     // is_referenceable
+    template<typename T> struct is_referenceable : public or_<is_object<T>, is_reference<T>>::type {};
+    template<typename R, typename... Args> struct is_referenceable<R(Args...)> : public true_type {};
 
     // add_pointer
+    namespace det {
+        template<typename T, bool = or_<is_referenceable<T>, is_void<T>>::value>
+        struct add_pointer_helper           { typedef T type; };
+        template<typename T>
+        struct add_pointer_helper<T, true>  { typedef typename remove_reference<T>::type *type; };
+    }
+    template<typename T> struct add_pointer : public det::add_pointer_helper<T> {};
 
+    // decay
+    namespace det {
+        template<typename T, bool = is_array<T>::value, bool = is_function<T>::value> struct decay_helper;
+        template<typename T> struct decay_helper<T, false, false> { typedef typename remove_const<T>::type type; };
+        template<typename T> struct decay_helper<T, true, false>  { typedef typename remove_extent<T>::type *type; };
+        template<typename T> struct decay_helper<T, false, true>  { typedef typename add_pointer<T>::type type; };
+    }
+    template<typename T> struct decay { typedef typename det::decay_helper<typename remove_reference<T>::type>::type type; }
+
+    // add_lvalue_reference, add_rvalue_reference
+    namespace det {
+        template<typename T, bool = is_referenceable<T>::value> struct add_lvalue_reference_helper { typedef T type; };
+        template<typename T, bool = is_referenceable<T>::value> struct add_rvalue_reference_helper { typedef T type; };
+        template<typename T> struct add_lvalue_reference_helper<T, true> { typedef T &type; };
+        template<typename T> struct add_rvalue_reference_helper<T, true> { typedef T &&type; };
+    }
+    template<typename T> struct add_lvalue_reference : public det::add_lvalue_reference_helper<T> {};
+    template<typename T> struct add_rvalue_reference : public det::add_rvalue_reference_helper<T> {};
+
+    // add_const
+    template<typename T> struct add_const { typedef T const type; };
+
+
+    // is_same
+    // enable_if
+    // declval
 }
 
 #endif
