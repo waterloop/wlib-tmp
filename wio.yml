@@ -15,7 +15,7 @@ project:
   license: MIT
   compile_options:
     header_only: true
-    wio_version: 0.4.0
+    wio_version: 0.4.1
     default_target: tests
 
 targets:
