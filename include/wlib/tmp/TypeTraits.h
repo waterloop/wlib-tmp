@@ -2,11 +2,11 @@
 #define __WLIB_TMP_TYPETRAITS_H__
 
 #include <stdint.h>
+#include <stddef.h>
 
 #include <wlib/tmp/NullptrType.h>
 #include <wlib/tmp/IntegralConstant.h>
 #include <wlib/tmp/Condition.h>
-#include <random>
 
 namespace wlp {
 
